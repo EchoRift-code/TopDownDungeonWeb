@@ -29,7 +29,7 @@
             let grassTile = new Image(), dirtTile = new Image(), wallTile = new Image();
             grassTile.src = "Images/OpenGameArt/Set1/grass_flowers_blue1.png";
             dirtTile.src = "Images/OpenGameArt/Set1/dirt0.png";
-            wallTile.src = "Images/OpenGameArt/Set1/grass_flowers_blue1.png";
+            wallTile.src = "Images/OpenGameArt/Set1/cobble_blood1.png";
 
             tiles.push(wallTile);
             tiles.push(grassTile);
@@ -181,15 +181,17 @@
                             if(map[row][col] == 0){ // Wall
                                 //draw.fillStyle = "white";
                                 //draw.fillRect(col*tileSize -camera.x, row*tileSize -camera.y, tileSize, tileSize);
-                                draw.drawImage(tiles[0], col*tileSize -camera.x, row*tileSize -camera.y)
+                                draw.drawImage(tiles[0], col*tileSize -camera.x, row*tileSize -camera.y, tileSize, tileSize);
                             }
                             else if(map[row][col] == 1){ // Grass
-                                draw.fillStyle = "green";
-                                draw.fillRect(col*tileSize -camera.x, row*tileSize -camera.y, tileSize, tileSize);
+                                //draw.fillStyle = "green";
+                                //draw.fillRect(col*tileSize -camera.x, row*tileSize -camera.y, tileSize, tileSize);
+                                draw.drawImage(tiles[1], col*tileSize -camera.x, row*tileSize -camera.y, tileSize, tileSize)
                             }
                             else if(map[row][col] == 2){ // Dirt
-                                draw.fillStyle = "orange";
-                                draw.fillRect(col*tileSize -camera.x, row*tileSize -camera.y, tileSize, tileSize);
+                                //draw.fillStyle = "orange";
+                                //draw.fillRect(col*tileSize -camera.x, row*tileSize -camera.y, tileSize, tileSize);
+                                draw.drawImage(tiles[2], col*tileSize -camera.x, row*tileSize -camera.y, tileSize, tileSize)
                             }
                             else if(map[row][col] == 3){ // Vendor
                                 draw.fillStyle = "green";
