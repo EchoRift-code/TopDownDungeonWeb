@@ -27,30 +27,61 @@ let enemySprites = {
 // create the empy array to hold the enemy
 let enemies = [];
 function spawnEnemies(levelMap) { 
-    enemies = []; 
-    for (let row = 0; row < levelMap.length; row++) {
-        for (let col = 0; col < levelMap[row].length; col++) {
-            let tile = levelMap[row][col]; // gets the tile number at the location
-            if (enemyRegistry[tile]) { // if the tile number matches a number in the registry
-                let typeName = enemyRegistry[tile]; // gets the second value in the registry
-                enemies.push({ // add all the values to the enemy array
-                    type: typeName,
-                    x: col * tileSize,
-                    y: row * tileSize,
-                    image: enemySprites[typeName], // using the type name, (second value in enemySprite), get the image
-                    
-                    health: 50, // base health for all enemies, multiply when drawing health to increase value
-                    moneyValue: 5, // base amount on how much the player will earn on kill
+    switch(levelMap){
+        case startMap:
+            enemies = []; 
+            for (let row = 0; row < levelMap.length; row++) {
+                for (let col = 0; col < levelMap[row].length; col++) {
+                    let tile = levelMap[row][col]; // gets the tile number at the location
+                    if (enemyRegistry[tile]) { // if the tile number matches a number in the registry
+                        let typeName = enemyRegistry[tile]; // gets the second value in the registry
+                        enemies.push({ // add all the values to the enemy array
+                            type: typeName,
+                            x: col * tileSize,
+                            y: row * tileSize,
+                            image: enemySprites[typeName], // using the type name, (second value in enemySprite), get the image
+                            
+                            health: 50, // base health for all enemies, multiply when drawing health to increase value
+                            moneyValue: 5, // base amount on how much the player will earn on kill
 
-                    frameIndex: 0,
-                    tickCount: 0,
-                    ticksPerFrame: 10, // Lower number means faster movement
-                    moveState: { movingLeft: true, movingRight: false }
-                });
+                            frameIndex: 0,
+                            tickCount: 0,
+                            ticksPerFrame: 10, // Lower number means faster movement
+                            moveState: { movingLeft: true, movingRight: false }
+                        });
 
-                levelMap[row][col] = 3; // Resets the value at the tile in the tilemap to this value
+                        levelMap[row][col] = 3; // Resets the value at the tile in the tilemap to this value
+                    }
+                }
             }
-        }
+            break;
+        case map2:
+            enemies = []; 
+            for (let row = 0; row < levelMap.length; row++) {
+                for (let col = 0; col < levelMap[row].length; col++) {
+                    let tile = levelMap[row][col]; // gets the tile number at the location
+                    if (enemyRegistry[tile]) { // if the tile number matches a number in the registry
+                        let typeName = enemyRegistry[tile]; // gets the second value in the registry
+                        enemies.push({ // add all the values to the enemy array
+                            type: typeName,
+                            x: col * tileSize,
+                            y: row * tileSize,
+                            image: enemySprites[typeName], // using the type name, (second value in enemySprite), get the image
+                            
+                            health: 50, // base health for all enemies, multiply when drawing health to increase value
+                            moneyValue: 5, // base amount on how much the player will earn on kill
+
+                            frameIndex: 0,
+                            tickCount: 0,
+                            ticksPerFrame: 10, // Lower number means faster movement
+                            moveState: { movingLeft: true, movingRight: false }
+                        });
+
+                        levelMap[row][col] = 1; // Resets the value at the tile in the tilemap to this value
+                    }
+                }
+            }
+            break;
     }
 }
 
@@ -82,84 +113,328 @@ function updateNPC(npc, moveState, levelMap) {
 
 // updates the drawing of the npc
 function updateAndDrawEnemy(npc, state) {
-    switch(state){
-        case 1:
-            npc.tickCount++;
-            if (npc.tickCount > npc.ticksPerFrame) {
-                npc.tickCount = 0;
-                npc.frameIndex++;
-                if (npc.frameIndex >= 3) { npc.frameIndex = 0; }
+    switch(npc.type){
+        case "swordsman":
+            switch(state){
+                case 1:
+                    npc.tickCount++;
+                    if (npc.tickCount > npc.ticksPerFrame) {
+                        npc.tickCount = 0;
+                        npc.frameIndex++;
+                        if (npc.frameIndex >= 3) { npc.frameIndex = 0; }
+                    }
+
+                    let sw = npc.image.width / 7; 
+                    let sh = npc.image.height / 6;
+                    let sx = npc.frameIndex * 32;
+
+                    draw.save(); 
+                    if (npc.moveState.movingLeft) { 
+                        draw.translate(npc.x - camera.x + tileSize, 0); 
+                        draw.scale(-1, 1);   
+                        draw.drawImage(npc.image, sx, 0, sw, sh, 0 - 48, npc.y - camera.y - 28, 144, 144);
+                    } 
+                    else {
+                        draw.drawImage(npc.image, sx, 0, sw, sh, npc.x - camera.x-48, npc.y - camera.y-28, 144, 144);
+                    }
+
+                    draw.restore();
+                    break;
+                case 2: // npc fighting sprite
+                    npc.tickCount++;
+                    if (npc.tickCount > npc.ticksPerFrame) {
+                        npc.tickCount = 0;
+                        npc.frameIndex++;
+                        if (npc.frameIndex >= 7) { npc.frameIndex = 0; }
+                    }
+
+                    let swf = npc.image.width / 7; 
+                    let shf = npc.image.height / 6;
+                    let sxf = npc.frameIndex * 32;
+                    let syf = 3 * shf;
+
+                    draw.save(); 
+                    if (player.x < npc.x ) { 
+                        draw.translate(npc.x - camera.x + tileSize, 0); 
+                        draw.scale(-1, 1);   
+                        draw.drawImage(npc.image, sxf, syf, swf, shf, 0-48, npc.y - camera.y-28, 144, 144);
+                    } 
+                    else {
+                        draw.drawImage(npc.image, sxf, syf, swf, shf, npc.x - camera.x, npc.y - camera.y-28, 144, 144);
+                    }
+
+                    draw.restore();
+                    break;
+                case 3: // npc fighting sprite
+                    npc.tickCount++;
+                    if (npc.tickCount > npc.ticksPerFrame) {
+                        npc.tickCount = 0;
+                        npc.frameIndex++;
+                        if (npc.frameIndex >= 4) { 
+                            npc.frameIndex = 4; 
+                        }
+                    }
+
+                    let swd = npc.image.width / 7; 
+                    let shd = npc.image.height / 6;
+                    let sxd = npc.frameIndex * 32;
+                    let syd = 5 * shd;
+
+                    draw.save(); 
+                    if (player.x < npc.x ) { 
+                        draw.translate(npc.x - camera.x + tileSize, 0); 
+                        draw.scale(-1, 1);   
+                        draw.drawImage(npc.image, sxd, syd, swd, shd, 0-48, npc.y - camera.y-28, 144, 144);
+                    } 
+                    else {
+                        draw.drawImage(npc.image, sxd, syd, swd, shd, npc.x - camera.x, npc.y - camera.y-28, 144, 144);
+                    }
+
+                    draw.restore();
+                    break;
             }
-
-            let sw = npc.image.width / 7; 
-            let sh = npc.image.height / 6;
-            let sx = npc.frameIndex * 32;
-
-            draw.save(); 
-            if (npc.moveState.movingLeft) { 
-                draw.translate(npc.x - camera.x + tileSize, 0); 
-                draw.scale(-1, 1);   
-                draw.drawImage(npc.image, sx, 0, sw, sh, 0 - 48, npc.y - camera.y - 28, 144, 144);
-            } 
-            else {
-                draw.drawImage(npc.image, sx, 0, sw, sh, npc.x - camera.x-48, npc.y - camera.y-28, 144, 144);
-            }
-
-            draw.restore();
             break;
-        case 2: // npc fighting sprite
-            npc.tickCount++;
-            if (npc.tickCount > npc.ticksPerFrame) {
-                npc.tickCount = 0;
-                npc.frameIndex++;
-                if (npc.frameIndex >= 7) { npc.frameIndex = 0; }
+        case "spearman":
+            switch(state){
+                case 1:
+                    npc.tickCount++;
+                    if (npc.tickCount > npc.ticksPerFrame) {
+                        npc.tickCount = 0;
+                        npc.frameIndex++;
+                        if (npc.frameIndex >= 3) { npc.frameIndex = 0; }
+                    }
+
+                    let sw = npc.image.width / 7; 
+                    let sh = npc.image.height / 6;
+                    let sx = npc.frameIndex * 32;
+
+                    draw.save(); 
+                    if (npc.moveState.movingLeft) { 
+                        draw.translate(npc.x - camera.x + tileSize, 0); 
+                        draw.scale(-1, 1);   
+                        draw.drawImage(npc.image, sx, 0, sw, sh, 0 - 48, npc.y - camera.y - 28, 144, 144);
+                    } 
+                    else {
+                        draw.drawImage(npc.image, sx, 0, sw, sh, npc.x - camera.x-48, npc.y - camera.y-28, 144, 144);
+                    }
+
+                    draw.restore();
+                    break;
+                case 2: // npc fighting sprite
+                    npc.tickCount++;
+                    if (npc.tickCount > npc.ticksPerFrame) {
+                        npc.tickCount = 0;
+                        npc.frameIndex++;
+                        if (npc.frameIndex >= 7) { npc.frameIndex = 0; }
+                    }
+
+                    let swf = npc.image.width / 7; 
+                    let shf = npc.image.height / 6;
+                    let sxf = npc.frameIndex * 32;
+                    let syf = 3 * shf;
+
+                    draw.save(); 
+                    if (player.x < npc.x ) { 
+                        draw.translate(npc.x - camera.x + tileSize, 0); 
+                        draw.scale(-1, 1);   
+                        draw.drawImage(npc.image, sxf, syf, swf, shf, 0-48, npc.y - camera.y-28, 144, 144);
+                    } 
+                    else {
+                        draw.drawImage(npc.image, sxf, syf, swf, shf, npc.x - camera.x, npc.y - camera.y-28, 144, 144);
+                    }
+
+                    draw.restore();
+                    break;
+                case 3: // npc fighting sprite
+                    npc.tickCount++;
+                    if (npc.tickCount > npc.ticksPerFrame) {
+                        npc.tickCount = 0;
+                        npc.frameIndex++;
+                        if (npc.frameIndex >= 4) { 
+                            npc.frameIndex = 4; 
+                        }
+                    }
+
+                    let swd = npc.image.width / 7; 
+                    let shd = npc.image.height / 6;
+                    let sxd = npc.frameIndex * 32;
+                    let syd = 5 * shd;
+
+                    draw.save(); 
+                    if (player.x < npc.x ) { 
+                        draw.translate(npc.x - camera.x + tileSize, 0); 
+                        draw.scale(-1, 1);   
+                        draw.drawImage(npc.image, sxd, syd, swd, shd, 0-48, npc.y - camera.y-28, 144, 144);
+                    } 
+                    else {
+                        draw.drawImage(npc.image, sxd, syd, swd, shd, npc.x - camera.x, npc.y - camera.y-28, 144, 144);
+                    }
+
+                    draw.restore();
+                    break;
             }
-
-            let swf = npc.image.width / 7; 
-            let shf = npc.image.height / 6;
-            let sxf = npc.frameIndex * 32;
-            let syf = 3 * shf;
-
-            draw.save(); 
-            if (player.x < npc.x ) { 
-                draw.translate(npc.x - camera.x + tileSize, 0); 
-                draw.scale(-1, 1);   
-                draw.drawImage(npc.image, sxf, syf, swf, shf, 0-48, npc.y - camera.y-28, 144, 144);
-            } 
-            else {
-                draw.drawImage(npc.image, sxf, syf, swf, shf, npc.x - camera.x, npc.y - camera.y-28, 144, 144);
-            }
-
-            draw.restore();
             break;
-        case 3: // npc fighting sprite
-            npc.tickCount++;
-            if (npc.tickCount > npc.ticksPerFrame) {
-                npc.tickCount = 0;
-                npc.frameIndex++;
-                if (npc.frameIndex >= 4) { 
-                    npc.frameIndex = 4; 
-                }
+        case "archer":
+            switch(state){
+                case 1:
+                    npc.tickCount++;
+                    if (npc.tickCount > npc.ticksPerFrame) {
+                        npc.tickCount = 0;
+                        npc.frameIndex++;
+                        if (npc.frameIndex >= 3) { npc.frameIndex = 0; }
+                    }
+
+                    let sw = npc.image.width / 12; 
+                    let sh = npc.image.height / 7;
+                    let sx = npc.frameIndex * 32;
+
+                    draw.save(); 
+                    if (npc.moveState.movingLeft) { 
+                        draw.translate(npc.x - camera.x + tileSize, 0); 
+                        draw.scale(-1, 1);   
+                        draw.drawImage(npc.image, sx, 0, sw, sh, 0 - 48, npc.y - camera.y - 28, 144, 144);
+                    } 
+                    else {
+                        draw.drawImage(npc.image, sx, 0, sw, sh, npc.x - camera.x, npc.y - camera.y-28, 144, 144);
+                    }
+
+                    draw.restore();
+                    break;
+                case 2: // npc fighting sprite
+                    npc.tickCount++;
+                    if (npc.tickCount > npc.ticksPerFrame) {
+                        npc.tickCount = 0;
+                        npc.frameIndex++;
+                        if (npc.frameIndex >= 12) { npc.frameIndex = 0; }
+                    }
+
+                    let swf = npc.image.width / 12; 
+                    let shf = npc.image.height / 7;
+                    let sxf = npc.frameIndex * 32;
+                    let syf = 3 * shf;
+
+                    draw.save(); 
+                    if (player.x < npc.x ) { 
+                        draw.translate(npc.x - camera.x + tileSize, 0); 
+                        draw.scale(-1, 1);   
+                        draw.drawImage(npc.image, sxf, syf, swf, shf, 0-48, npc.y - camera.y-28, 144, 144);
+                    } 
+                    else {
+                        draw.drawImage(npc.image, sxf, syf, swf, shf, npc.x - camera.x, npc.y - camera.y-28, 144, 144);
+                    }
+
+                    draw.restore();
+                    break;
+                case 3: // npc fighting sprite
+                    npc.tickCount++;
+                    if (npc.tickCount > npc.ticksPerFrame) {
+                        npc.tickCount = 0;
+                        npc.frameIndex++;
+                        if (npc.frameIndex >= 4) { 
+                            npc.frameIndex = 4; 
+                        }
+                    }
+
+                    let swd = npc.image.width / 12; 
+                    let shd = npc.image.height / 7;
+                    let sxd = npc.frameIndex * 32;
+                    let syd = 6 * shd; // counting index starts at 0
+
+                    draw.save(); 
+                    if (player.x < npc.x ) { 
+                        draw.translate(npc.x - camera.x + tileSize, 0); 
+                        draw.scale(-1, 1);   
+                        draw.drawImage(npc.image, sxd, syd, swd, shd, 0-48, npc.y - camera.y-28, 144, 144);
+                    } 
+                    else {
+                        draw.drawImage(npc.image, sxd, syd, swd, shd, npc.x - camera.x, npc.y - camera.y-28, 144, 144);
+                    }
+
+                    draw.restore();
+                    break;
             }
-
-            let swd = npc.image.width / 7; 
-            let shd = npc.image.height / 6;
-            let sxd = npc.frameIndex * 32;
-            let syd = 5 * shd;
-
-            draw.save(); 
-            if (player.x < npc.x ) { 
-                draw.translate(npc.x - camera.x + tileSize, 0); 
-                draw.scale(-1, 1);   
-                draw.drawImage(npc.image, sxd, syd, swd, shd, 0-48, npc.y - camera.y-28, 144, 144);
-            } 
-            else {
-                draw.drawImage(npc.image, sxd, syd, swd, shd, npc.x - camera.x, npc.y - camera.y-28, 144, 144);
-            }
-
-            draw.restore();
             break;
-    }
+        case "archmage":
+            switch(state){
+                case 1:
+                    npc.tickCount++;
+                    if (npc.tickCount > npc.ticksPerFrame) {
+                        npc.tickCount = 0;
+                        npc.frameIndex++;
+                        if (npc.frameIndex >= 3) { npc.frameIndex = 0; }
+                    }
+
+                    let sw = npc.image.width / 12; 
+                    let sh = npc.image.height / 9;
+                    let sx = npc.frameIndex * 32;
+
+                    draw.save(); 
+                    if (npc.moveState.movingLeft) { 
+                        draw.translate(npc.x - camera.x + tileSize, 0); 
+                        draw.scale(-1, 1);   
+                        draw.drawImage(npc.image, sx, 0, sw, sh, 0 - 32, npc.y - camera.y - 28, 144, 144);
+                    } 
+                    else {
+                        draw.drawImage(npc.image, sx, 0, sw, sh, npc.x - camera.x, npc.y - camera.y-28, 144, 144);
+                    }
+
+                    draw.restore();
+                    break;
+                case 2: // npc fighting sprite
+                    npc.tickCount++;
+                    if (npc.tickCount > npc.ticksPerFrame) {
+                        npc.tickCount = 0;
+                        npc.frameIndex++;
+                        if (npc.frameIndex >= 11) { npc.frameIndex = 0; }
+                    }
+
+                    let swf = npc.image.width / 12; 
+                    let shf = npc.image.height / 9;
+                    let sxf = npc.frameIndex * 32;
+                    let syf = 4 * shf;
+
+                    draw.save(); 
+                    if (player.x < npc.x ) { 
+                        draw.translate(npc.x - camera.x + tileSize, 0); 
+                        draw.scale(-1, 1);   
+                        draw.drawImage(npc.image, sxf, syf, swf, shf, 0-48, npc.y - camera.y-28, 144, 144);
+                    } 
+                    else {
+                        draw.drawImage(npc.image, sxf, syf, swf, shf, npc.x - camera.x, npc.y - camera.y-28, 144, 144);
+                    }
+
+                    draw.restore();
+                    break;
+                case 3: // npc fighting sprite
+                    npc.tickCount++;
+                    if (npc.tickCount > npc.ticksPerFrame) {
+                        npc.tickCount = 0;
+                        npc.frameIndex++;
+                        if (npc.frameIndex >= 9) { 
+                            npc.frameIndex = 9; 
+                        }
+                    }
+
+                    let swd = npc.image.width / 12; 
+                    let shd = npc.image.height / 9;
+                    let sxd = npc.frameIndex * 32;
+                    let syd = 8 * shd;
+
+                    draw.save(); 
+                    if (player.x < npc.x ) { 
+                        draw.translate(npc.x - camera.x + tileSize, 0); 
+                        draw.scale(-1, 1);   
+                        draw.drawImage(npc.image, sxd, syd, swd, shd, 0-48, npc.y - camera.y-28, 144, 144);
+                    } 
+                    else {
+                        draw.drawImage(npc.image, sxd, syd, swd, shd, npc.x - camera.x, npc.y - camera.y-28, 144, 144);
+                    }
+
+                    draw.restore();
+                    break;
+            }
+            break;
+        }
 }
 
 const tileSize = 80;
@@ -168,7 +443,7 @@ const mapHeightInPixels = startMap.length * tileSize;
 
 let camera = { x: 0, y: 0 };
 // -32 so it'll actually be lined up with a tiled location rather than being on the lower corner of it
-let player = { x: mapWidthInPixels/2-16, y: mapHeightInPixels/2-128, width: 168, height: 168, health: 100, attack: .5, money: 0, speed: 3, state: "idle"};
+let player = { x: mapWidthInPixels/2-16, y: mapHeightInPixels/2-128, width: 168, height: 168, health: 100, attack: .5, money: 0, speed: 3, state: "idle", healthPotion: 2, manaPotions: 0};
 let hitbox = { x: 0, y: 0, width: 32, height: 72};
 let vendor = { x: 80, y: 400+16, width: 64, height: 64};
 let chest1Btn = { x: 160, y: 120, money: 5, hp: 0, mp: 0, width: 75, height: 35};
@@ -184,6 +459,8 @@ let drawMap1 = true;
 let drawMap2 = false;
 let mapChange = false;
 let movingLeft = false;
+let openInventory = false;
+let exitbtn = { x: 490, y: 35, width: 30, height: 30};
 
 // Track Keys
 let keys={};
@@ -191,8 +468,17 @@ document.addEventListener("keydown", (e)=>{
     keys[e.key]=true;
 });
 document.addEventListener("keyup", (e)=>{
-    keys[e.key]=false;
     player.state = "idle";
+
+    // Having this in here will make it so the player can only use 1 potion at a time and cannot exceed max health
+    if(keys["h"] && player.healthPotion >= 1){
+        player.health += 20;
+        if(player.health >= 100){
+            player.health = 100;
+        }
+        player.healthPotion -= 1;
+    }
+    keys[e.key]=false;
 });
 document.addEventListener("click", (e) =>{
     // Get the coordinates relative the screen/canvas
@@ -205,6 +491,7 @@ document.addEventListener("click", (e) =>{
     let worldMouseY = mouseY + camera.y;
 
     //console.log("Mouse X:", worldMouseX, "Mouse Y: ", worldMouseY);
+    //console.log("Mouse X:", mouseX, "Mouse Y: ", mouseY);
     //console.log("Player X:", player.x, "Player Y: ", player.y);
     if(drawMap1){
         if(worldMouseX >= chest1Btn.x && worldMouseX <= chest1Btn.x + chest1Btn.width && worldMouseY <=  chest1Btn.y + chest1Btn.height && worldMouseY >= chest1Btn.y){
@@ -219,7 +506,34 @@ document.addEventListener("click", (e) =>{
             player.y = 80;
         }
     }
+    if(openInventory){
+        if(worldMouseX >= exitbtn.x && worldMouseX <= exitbtn.x + exitbtn.width && worldMouseY <=  exitbtn.y + exitbtn.height && worldMouseY >= exitbtn){
+            openInventory = false;
+            console.log("Clicked")
+        }
+    }
 });
+// Mobile Controls
+const el = document.querySelector("canvas");
+// Activates when user puts a finger on the screen
+el.addEventListener("touchstart", (e) =>{
+    keys[e.key]=true;
+}); 
+
+// Actives if the user moves there finger while touching the screen
+el.addEventListener("touchmove", (e) =>{
+    
+});
+
+// Activates when the user stops touching the screen
+el.addEventListener("touchend", (e) =>{
+    keys[e.key]=false;
+}); 
+
+// Activates if the user moves there finger off the screen
+el.addEventListener("touchcancel", (e) =>{
+    keys[e.key]=false; 
+}); 
 
 function movementKeys(){
     if(keys["ArrowRight"]){
@@ -258,8 +572,17 @@ function movementKeys(){
         player.state = "walk";
         player.y += player.speed;
     }
+    // Triggers fighting animation
     if(keys["f"]){
         player.state = "attack";
+    }
+    // Open inventory
+    if(keys["i"]){
+        openInventory = true;
+    }
+    // Close inventory
+    if(keys["c"]){
+        openInventory = false;
     }
 }
 
@@ -490,7 +813,6 @@ function drawLighting() {
     draw.restore(); */
 }
 
-
 let timer = 120;
 let transitionTimer = 300;
 let levelLoaded = false;
@@ -500,10 +822,6 @@ let touchingChest = false;
 let touchingDoor = false;
 
 function gameLoop(){
-    if (!levelLoaded) {
-        spawnEnemies(startMap); 
-        levelLoaded = true; // This prevents it from running again next frame
-    }
     timer--;
     let oldX = player.x;
     let oldY = player.y;
@@ -528,6 +846,10 @@ function gameLoop(){
     hitbox.y = player.y+3;
 
     if(drawMap1){
+        if (!levelLoaded) {
+            spawnEnemies(startMap); 
+            levelLoaded = true; // This prevents it from running again next frame
+        }
         for(let row = 0; row < startMap.length; row++){
             for(let col = 0; col < startMap[row].length; col++){
                 if(startMap[row][col] == 1){ // Grass
@@ -604,7 +926,6 @@ function gameLoop(){
                             npc.health -= player.attack;
                         }
                     }
-                    
                 }
             }
             else{
@@ -617,12 +938,8 @@ function gameLoop(){
            
             if(walkTimer >= 0){
                 updateNPC(npc, npc.moveState, startMap);
-                
             }
-            walkTimer--;
-            //draw.strokeStyle = "black";
-            //draw.strokeRect( npc.x- camera.x, npc.y-camera.y, 100, 25);
-            
+            walkTimer--; 
             updateAndDrawEnemy(npc, enemyState);
         });
 
@@ -637,12 +954,23 @@ function gameLoop(){
         }
     } 
     else if(drawMap2){
+        if (!levelLoaded) {
+            spawnEnemies(map2); 
+            levelLoaded = true; // This prevents it from running again next frame
+        }
         for(let row = 0; row < map2.length; row++){
             for(let col = 0; col < map2[row].length; col++){
-                if(map2[row][col] == 1){
+                if(map2[row][col] == 1){ // Floor
                     draw.drawImage(level1Tiles[1], col*tileSize -camera.x, row*tileSize -camera.y, tileSize, tileSize)
-                }else if(map2[row][col] == 2){
+                }else if(map2[row][col] == 2){ // Wall
                     draw.drawImage(level1Tiles[2], col*tileSize -camera.x, row*tileSize -camera.y, tileSize, tileSize)
+                }
+                
+                else if(map2[row][col] == 4){ // Dungeon Entrance
+                    draw.drawImage(dungeonDoor1, col*tileSize -camera.x, row*tileSize -camera.y, tileSize, tileSize);
+                }
+                else if(map2[row][col] == 5){ // Chest
+                    draw.fillRect(col*tileSize -camera.x, row*tileSize -camera.y, tileSize, tileSize);
                 }
             }
         }
@@ -673,6 +1001,42 @@ function gameLoop(){
                 
             }
         }
+        enemies.forEach(npc => {
+            if (player.x < npc.x + tileSize && player.x + tileSize > npc.x && 
+                player.y < npc.y + tileSize && player.y + tileSize > npc.y) {
+                
+                if(player.health <= 0){
+                    player.health = 0;
+                    player.state = "death";
+                }
+                else{
+                    if(!npc.health == 0){
+                        enemyState = 2; // Fighting animation
+                        if(npc.type == "swordsman"){
+                            draw.fillStyle = "red";
+                            draw.fillRect( npc.x - camera.x, npc.y - camera.y-20, npc.health, 25);
+                        }
+                        player.health -= .1;
+                        if(player.state == "attack"){
+                            npc.health -= player.attack;
+                        }
+                    }
+                }
+            }
+            else{
+                enemyState = 1; // Idle animation
+            }
+            if(npc.health <= 0){
+                npc.health = 0;
+                enemyState = 3; // Death animation
+            }
+           
+            if(walkTimer >= 0){
+                updateNPC(npc, npc.moveState, map2);
+            }
+            walkTimer--; 
+            updateAndDrawEnemy(npc, enemyState);
+        });
         animatePlayer(player.state);
         drawLighting();
     }
@@ -717,6 +1081,22 @@ function gameLoop(){
         // Buy, sell buttons, click them open vendor inventory
         
     }
+
+    if(openInventory){
+        draw.fillStyle = "white";
+        draw.fillRect(70, 70, 420, 420);
+
+        draw.fillStyle = "red";
+        draw.fillRect(exitbtn.x, exitbtn.y, exitbtn.width, exitbtn.height);
+
+        draw.fillStyle = "Black";
+        draw.font = "30px arial";
+        draw.fillText(`Health Potions: ${player.healthPotion}`, 75, 95);
+        draw.fillText(`Mana Potions: ${player.manaPotions}`, 75, 130);
+        draw.fillText(`Weapon: ${player.attack}`, 75, 165); // display weapon name and attack value
+        draw.fillText("X", 495, 60);
+    }
+
     requestAnimationFrame(gameLoop); // Loops the frames
 }
 gameLoop()
