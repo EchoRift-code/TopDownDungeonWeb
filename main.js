@@ -561,9 +561,6 @@ document.addEventListener("touchstart", (e) =>{
     let worldTouchX = touchX + camera.x;
     let worldTouchY = touchY + camera.y;
 
-    draw.fillStyle = "yellow";
-    draw.font = "50px arial";
-    draw.fillText(`Touching the screen`, 5, 260);
     // Use touchX/touchY because the button stays on the screen, it doesn't move with the camera
     if (touchX >= mobilejmpbtn.x && 
         touchX <= mobilejmpbtn.x + mobilejmpbtn.width &&
@@ -577,7 +574,13 @@ document.addEventListener("touchstart", (e) =>{
     //keys[e.key]=true;
 });
 document.addEventListener("touchend", (e) => {
-    keys[e.key]=false;
+    // Since we don't have a 'key', we manually turn off the attack key
+    keys["f"] = false;
+    
+    // If the player isn't moving, return to idle
+    if (player.state === "attack") {
+        player.state = "idle";
+    }
 })
  
 function movementKeys(dt){
