@@ -553,8 +553,9 @@ document.addEventListener("click", (e) =>{
 document.addEventListener("touchstart", (e) =>{
     e.preventDefault();
     const rect = canvas.getBoundingClientRect();
-    const touchX = e.clientX - rect.left; // X relative to canvas
-    const touchY = e.clientY - rect.top; // Y relative to canvas
+    const touch = e.touches[0]; // Gets the values of the first finger that touches the screen
+    const touchX = touch.clientX - rect.left; // X relative to canvas
+    const touchY = touch.clientY - rect.top; // Y relative to canvas
 
     // Convert them to world coordinates to account for things not on the screen yet
     let worldTouchX = touchX + camera.x;
@@ -563,7 +564,7 @@ document.addEventListener("touchstart", (e) =>{
     draw.fillStyle = "yellow";
     draw.font = "50px arial";
     draw.fillText(`Touching the screen`, 5, 260);
-    if(mobilejmpbtn.x >= worldTouchX && mobilejmpbtn.x + mobilejmpbtn.radius*2 <= worldTouchX && worldTouchY >= mobilejmpbtn.y && worldTouchY <= mobilejmpbtn.y + mobilejmpbtn.radius*2){
+    if(mobilejmpbtn.x <= touchX && mobilejmpbtn.x + mobilejmpbtn.radius*2 >= touchX && touchY <= mobilejmpbtn.y && touchY >= mobilejmpbtn.y + mobilejmpbtn.radius*2){
         keys["f"]=true;
         player.state = "attack";
     }
