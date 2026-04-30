@@ -560,10 +560,11 @@ document.addEventListener("touchstart", (e) =>{
     let worldTouchX = touchX + camera.x;
     let worldTouchY = touchY + camera.y;
 
+
     if(mobilejmpbtn.x >= worldTouchX && mobilejmpbtn.x + mobilejmpbtn.radius*2 <= worldTouchX && worldTouchY >= mobilejmpbtn.y && worldTouchY <= mobilejmpbtn.y + mobilejmpbtn.radius*2){
-        if(keys["f"]){
-            player.state = "attack";
-        }
+        
+        player.state = "attack";
+        
     }
     //keys[e.key]=true;
 });
