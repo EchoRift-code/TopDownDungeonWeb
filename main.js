@@ -560,7 +560,9 @@ document.addEventListener("touchstart", (e) =>{
     let worldTouchX = touchX + camera.x;
     let worldTouchY = touchY + camera.y;
 
-
+    draw.fillStyle = "yellow";
+    draw.font = "50px arial";
+    draw.fillText(`Touching the screen`, 5, 260);
     if(mobilejmpbtn.x >= worldTouchX && mobilejmpbtn.x + mobilejmpbtn.radius*2 <= worldTouchX && worldTouchY >= mobilejmpbtn.y && worldTouchY <= mobilejmpbtn.y + mobilejmpbtn.radius*2){
         
         player.state = "attack";
