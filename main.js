@@ -564,10 +564,10 @@ document.addEventListener("touchstart", (e) =>{
     draw.font = "50px arial";
     draw.fillText(`Touching the screen`, 5, 260);
     if(mobilejmpbtn.x >= worldTouchX && mobilejmpbtn.x + mobilejmpbtn.radius*2 <= worldTouchX && worldTouchY >= mobilejmpbtn.y && worldTouchY <= mobilejmpbtn.y + mobilejmpbtn.radius*2){
-        
+        keys["f"]=true;
         player.state = "attack";
-        
     }
+    
     //keys[e.key]=true;
 });
 document.addEventListener("touchend", (e) => {
