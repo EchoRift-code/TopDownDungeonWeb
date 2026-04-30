@@ -1,4 +1,4 @@
-export {playerIdle, playerWalk, playerAttack, playerDeath, tiles, swordsmanEnemy, spearmanEnemy, archerEnemy, archmageEnemy, level1Tiles, dungeonDoor1}
+export {playerIdle, playerWalk, playerAttack, playerDeath, tiles, swordsmanEnemy, spearmanEnemy, archerEnemy, archmageEnemy, level1Tiles, dungeonDoor1, chestAnimation}
 
 let playerIdle =  new Image(), playerWalk = new Image(), playerAttack = new Image(), playerDeath = new Image();
 let grassTile = new Image(), dirtTile = new Image(), wallTile = new Image(); // OpenGameArt
@@ -9,16 +9,16 @@ playerWalk.src = "Images/Itchio/Player/WALK.png";
 playerAttack.src = "Images/Itchio/Player/ATTACK 1.png";
 playerDeath.src = "Images/Itchio/Player/DEATH.png";
 
-grassTile.src = "Images/OpenGameArt/Set1/grass_flowers_blue1.png";
-dirtTile.src = "Images/OpenGameArt/Set1/dirt0.png";
-wallTile.src = "Images/OpenGameArt/Set1/cobble_blood1.png";
+grassTile.src = "Images/OpenGameArt/Set1/StarterMap/grass_flowers_blue1.png";
+dirtTile.src = "Images/OpenGameArt/Set1/StarterMap/dirt0.png";
+wallTile.src = "Images/OpenGameArt/Set1/StarterMap/cobble_blood1.png";
 
 swordsmanEnemy.src = "Images/Itchio/[Common] MiniSwordMan.png";
 spearmanEnemy.src = "Images/Itchio/[Common] MiniSpearMan.png";
 archmageEnemy.src = "Images/Itchio/[Common] MiniArchMage.png";
 archerEnemy.src = "Images/Itchio/[Common] MiniArcher.png";
 
-dungeonDoor1.src = "Images/OpenGameArt/Set1/dngn_enter_dis.png";
+dungeonDoor1.src = "Images/OpenGameArt/Set1/StarterMap/dngn_enter_dis.png";
 
 playerIdle.onload = () =>{
     console.log("Hellow");
@@ -82,3 +82,18 @@ let level1Tiles = {
     1: floor2,
     2: wall2
 };
+
+let chestAnimation = [];
+let chestClosed = new Image(), chestOpened = new Image();
+chestOpened.src = "Images/OpenGameArt/Set1/chest2_open.png";
+chestClosed.src = "Images/OpenGameArt/Set1/chest2_closed.png";
+
+chestOpened.onload = () =>{
+    console.log("Hellow");
+}
+chestClosed.onload = () =>{
+    console.log("Hellow");
+}
+
+chestAnimation.push(chestClosed);
+chestAnimation.push(chestOpened);
