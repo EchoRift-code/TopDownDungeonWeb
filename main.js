@@ -462,7 +462,7 @@ let chest7Btn = { x: 2240, y: 2240, money: 5, hp: 0, mp: 0, width: 75, height: 3
 
 let dungeonDoor = { x: 1200, y: 40, width: 92, height:35};
 
-let mobilejmpbtn = { x: 500, y: 500, radius: 50};
+let mobilejmpbtn = { x: 500, y: 500, radius: 50, width: 100, height: 100};
 
 let drawMap1 = true;
 let drawMap2 = false;
@@ -564,8 +564,13 @@ document.addEventListener("touchstart", (e) =>{
     draw.fillStyle = "yellow";
     draw.font = "50px arial";
     draw.fillText(`Touching the screen`, 5, 260);
-    if(mobilejmpbtn.x <= touchX && mobilejmpbtn.x + mobilejmpbtn.radius*2 >= touchX && touchY <= mobilejmpbtn.y && touchY >= mobilejmpbtn.y + mobilejmpbtn.radius*2){
-        keys["f"]=true;
+    // Use touchX/touchY because the button stays on the screen, it doesn't move with the camera
+    if (touchX >= mobilejmpbtn.x && 
+        touchX <= mobilejmpbtn.x + mobilejmpbtn.width &&
+        touchY >= mobilejmpbtn.y && 
+        touchY <= mobilejmpbtn.y + mobilejmpbtn.height) {
+        
+        keys["f"] = true;
         player.state = "attack";
     }
     
