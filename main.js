@@ -1,6 +1,8 @@
 import {map} from "./Maps/map.js"
 import {map2} from "./Maps/map2.js"
-import { playerIdle, playerWalk, playerAttack, playerDeath, tiles, level1Tiles, dungeonDoor1, swordsmanEnemy, archerEnemy, archmageEnemy, spearmanEnemy, chestAnimation } from "./Images/LoadedImages/images.js";
+import { playerIdle, playerWalk, playerAttack, playerDeath, tiles, level1Tiles, dungeonDoor1, 
+    swordsmanEnemy, archerEnemy, archmageEnemy, spearmanEnemy, chestAnimation,
+    hpPotionImg, mpPotionImg, weaponImg, armorImage, weaponImages } from "./Images/LoadedImages/images.js";
 const canvas = document.getElementById('gameCanvas');
 /**@type {CanvasRenderingContext2D*/
 const draw = canvas.getContext("2d"); // add the line above this to be able to see all the methods available when you type draw.
@@ -43,6 +45,7 @@ function spawnEnemies(levelMap) {
                             
                             health: 50, // base health for all enemies, multiply when drawing health to increase value
                             moneyValue: 5, // base amount on how much the player will earn on kill
+                            giveMoney: 0,
 
                             frameIndex: 0,
                             tickCount: 0,
@@ -110,6 +113,7 @@ function updateNPC(npc, moveState, levelMap) {
         npc.x += 1;
     }
 }
+let stopLeft = false;
 
 // updates the drawing of the npc
 function updateAndDrawEnemy(npc, state) {
@@ -167,6 +171,7 @@ function updateAndDrawEnemy(npc, state) {
                     draw.restore();
                     break;
                 case 3: // npc fighting sprite
+                    
                     npc.tickCount++;
                     if (npc.tickCount > npc.ticksPerFrame) {
                         npc.tickCount = 0;
@@ -180,18 +185,33 @@ function updateAndDrawEnemy(npc, state) {
                     let shd = npc.image.height / 6;
                     let sxd = npc.frameIndex * 32;
                     let syd = 5 * shd;
-
+                   
                     draw.save(); 
-                    if (player.x < npc.x ) { 
+                    
+                    if (player.x < npc.x && !stopLeft) { 
                         draw.translate(npc.x - camera.x + tileSize, 0); 
                         draw.scale(-1, 1);   
                         draw.drawImage(npc.image, sxd, syd, swd, shd, 0-32, npc.y - camera.y-28, 144, 144);
+                        
                     } 
-                    else {
+                    else{
                         draw.drawImage(npc.image, sxd, syd, swd, shd, npc.x - camera.x-32, npc.y - camera.y-28, 144, 144);
                     }
 
                     draw.restore();
+                    if(npc.frameIndex == 4){
+                        stopLeft = true;
+                    }
+                    /* if(stopLeft){
+                        draw.save(); 
+                        draw.translate(npc.x - camera.x + tileSize, 0); 
+                        draw.scale(-1, 1);   
+                        draw.drawImage(npc.image, sxd, syd, swd, shd, 0-32, npc.y - camera.y-28, 144, 144);
+                        draw.restore();
+                    }else if(stopRight){
+                        draw.drawImage(npc.image, sxd, syd, swd, shd, npc.x - camera.x-32, npc.y - camera.y-28, 144, 144);
+                    } */
+                    
                     break;
             }
             break;
@@ -440,13 +460,21 @@ function updateAndDrawEnemy(npc, state) {
         }
 }
 
+
 const tileSize = 80;
 const mapWidthInPixels = startMap[0].length * tileSize;
 const mapHeightInPixels = startMap.length * tileSize;
 
+let weapons = [ ["Greatsword", 0.5],
+                ["Hammer", 0.7]];
+
+let weaponsNotCollected = [ ["Axe", 0.2],
+                            ["Sword", 0.3],
+                            ["Whip", 0.9]];
+
 let camera = { x: 0, y: 0 };
 // -32 so it'll actually be lined up with a tiled location rather than being on the lower corner of it
-let player = { x: mapWidthInPixels/2-16, y: mapHeightInPixels/2-128, width: 168, height: 168, health: 100, attack: .5, money: 0, speed: 4, state: "idle", healthPotion: 2, manaPotions: 0};
+let player = { x: mapWidthInPixels/2-16, y: mapHeightInPixels/2-128, width: 168, height: 168, health: 100, weapon: weapons[0][0], attack: weapons[0][1], money: 0, speed: 4, state: "idle", healthPotion: 0, manaPotions: 0};
 let hitbox = { x: 0, y: 0, width: 32, height: 72};
 let vendor = { x: 80, y: 400+16, width: 64, height: 64};
 
@@ -462,13 +490,23 @@ let chest7Btn = { x: 2240, y: 2240, money: 5, hp: 0, mp: 0, width: 75, height: 3
 
 let dungeonDoor = { x: 1200, y: 40, width: 92, height:35};
 
-let mobilejmpbtn = { x: 500, y: 500, radius: 50, width: 100, height: 100};
+let mobileAttackBtn = { x: 500, y: 500, radius: 50, width: 100, height: 100 };
+let joystickOutline = { x: 60, y: 500, radius: 50, width: 100, height: 100 };
+let joystick = { x: 60, y: 500, radius: 25, width: 50, height: 50 };
+
+let inventoryBar = { x: 130, y: 465, width: 300, height: 75 };
+let hpBtn = { x: 130, y: 465, width: 75, height: 75 }; // hp, mp, weapon, armor
+let mpBtn = { x: 205, y: 465, width: 75, height: 75 };
+let weaponBtn = { x: 280, y: 465, width: 75, height: 75 };
+let armorBtn = { x: 355, y: 465, width: 75, height: 75 };
 
 let drawMap1 = true;
 let drawMap2 = false;
 let mapChange = false;
 let movingLeft = false;
 let openInventory = false;
+let openWeaponInventory = false;
+let openArmorInventory = false;
 let exitbtn = { x: 490, y: 35, width: 30, height: 30};
 
 // Track Keys
@@ -558,25 +596,77 @@ document.addEventListener("touchstart", (e) =>{
     const touchY = touch.clientY - rect.top; // Y relative to canvas
 
     // Convert them to world coordinates to account for things not on the screen yet
-    let worldTouchX = touchX + camera.x;
+    let worldTouchX = touchX + camera.x; // Used if the player needs to click on a chest
     let worldTouchY = touchY + camera.y;
 
     // Use touchX/touchY because the button stays on the screen, it doesn't move with the camera
-    if (touchX >= mobilejmpbtn.x && 
-        touchX <= mobilejmpbtn.x + mobilejmpbtn.width &&
-        touchY >= mobilejmpbtn.y && 
-        touchY <= mobilejmpbtn.y + mobilejmpbtn.height) {
+    if (touchX >= mobileAttackBtn.x && 
+        touchX <= mobileAttackBtn.x + mobileAttackBtn.width &&
+        touchY >= mobileAttackBtn.y && 
+        touchY <= mobileAttackBtn.y + mobileAttackBtn.height) {
         
         keys["f"] = true;
         player.state = "attack";
     }
+    // If players finger is anywhere in the joystickoutline
+    if (touchX >= joystickOutline.x && 
+        touchX <= joystickOutline.x + joystickOutline.width &&
+        touchY >= joystickOutline.y && 
+        touchY <= joystickOutline.y + joystickOutline.height) {
+        
+        joystick.x = touchX;
+        joystick.y = touchY;
+
+        if(touchY < 525){
+            keys["ArrowUp"] = true;
+            player.state = "walk";
+        }
+        if(touchY > 525){
+            keys["ArrowDown"] = true;
+            player.state = "walk";
+        }
+        if(touchX < 85){
+            keys["ArrowLeft"] = true;
+            player.state = "walk";
+        }
+        if(touchX > 85){
+            keys["ArrowRight"] = true;
+            player.state = "walk";
+        }
+    }
+
+    if (touchX >= hpBtn.x && touchX <= hpBtn.x + hpBtn.width &&
+        touchY >= hpBtn.y && touchY <= hpBtn.y + hpBtn.height) {
+        if(player.healthPotion > 0){
+            player.health += 25;
+            if(player.health > 100){
+                player.health = 100;
+            }
+        }
+    }
     
+    if (touchX >= mpBtn.x && touchX <= mpBtn.x + mpBtn.width &&
+        touchY >= mpBtn.y && touchY <= mpBtn.y + mpBtn.height) {
+    }
+
+    if (touchX >= weaponBtnBtn.x && touchX <= weaponBtnBtn.x + weaponBtnBtn.width &&
+        touchY >= weaponBtnBtn.y && touchY <= weaponBtnBtn.y + weaponBtnBtn.height) {
+        openWeaponInventory = true;
+    }
+
+    if (touchX >= armorBtn.x && touchX <= armorBtn.x + armorBtn.width &&
+        touchY >= armorBtn.y && touchY <= armorBtn.y + armorBtn.height) {
+        openArmorInventory = true;
+    }
     //keys[e.key]=true;
 });
 document.addEventListener("touchend", (e) => {
     // Since we don't have a 'key', we manually turn off the attack key
     keys["f"] = false;
-    
+    keys["ArrowUp"] = false;
+    keys["ArrowDown"] = false;
+    keys["ArrowLeft"] = false;
+    keys["ArrowRight"] = false;
     // If the player isn't moving, return to idle
     if (player.state === "attack") {
         player.state = "idle";
@@ -636,6 +726,14 @@ function movementKeys(dt){
     // Close inventory
     if(keys["c"]){
         openInventory = false;
+        openWeaponInventory = false;
+        openArmorInventory = false;
+    }
+    if(keys["q"]){
+        openWeaponInventory = true;
+    }
+    if(keys["e"]){
+        openArmorInventory = true;
     }
 }
 
@@ -982,6 +1080,8 @@ let enemyState = 1;
 let walkTimer = 20;
 let touchingDoor = false;
 
+let randNum = 0;
+//Math.random() * (max-min)+min;
 let lastTime = 0;
 
 function gameLoop(currentTime){
@@ -1106,11 +1206,32 @@ function gameLoop(currentTime){
             else{
                 enemyState = 1; // Idle animation
             }
+            
             if(npc.health <= 0){
                 npc.health = 0;
                 enemyState = 3; // Death animation
+                
+                if(npc.giveMoney < 1){
+                    player.money += npc.moneyValue;
+                    randNum = Math.floor(Math.random() * (10 - 1) + 1); // 1-5
+                    //console.log("random number:", randNum);
+                    if(randNum == 2){
+                        player.healthPotion += 1;
+                        console.log("Received 1 hp");
+                    }
+                    if(randNum == 4){
+                        player.manaPotions += 1;
+                        console.log("Received 1 mp");
+                    }
+                    if(randNum == 1 || randNum == 3){
+                        player.healthPotion += 1;
+                        player.manaPotions += 1;
+                        console.log("Received 1 hp and mp");
+                    }
+                    npc.giveMoney++;
+                }
             }
-           
+            
             if(walkTimer >= 0){
                 updateNPC(npc, npc.moveState, startMap);
             }
@@ -1120,7 +1241,20 @@ function gameLoop(currentTime){
 
         // mobile jump button
         draw.beginPath();
-        draw.arc( mobilejmpbtn.x, mobilejmpbtn.y, mobilejmpbtn.radius, 0, Math.PI*2);
+        draw.fillStyle = "rgba( 255, 0, 0, 1 )";
+        draw.arc( mobileAttackBtn.x, mobileAttackBtn.y, mobileAttackBtn.radius, 0, Math.PI*2);
+        draw.fill();
+        draw.closePath();
+
+        draw.beginPath();
+        draw.fillStyle = "rgba(255,255,255,0.5)";
+        draw.arc( joystickOutline.x, joystickOutline.y, joystickOutline.radius, 0, Math.PI*2);
+        draw.fill();
+        draw.closePath();
+
+        draw.beginPath();
+        draw.fillStyle = "rgba( 255, 255, 255, 0.8)";
+        draw.arc( joystick.x, joystick.y, joystick.radius, 0, Math.PI*2);
         draw.fill();
         draw.closePath();
 
@@ -1136,6 +1270,70 @@ function gameLoop(currentTime){
         draw.font = "30px arial";
         draw.fillText(`${player.money}`, 25, 60);
 
+        // Draw item bar at the bottom of the screen
+        //draw.fillStyle = "rgba(255,255,255,0.5)";
+        draw.fillStyle = "black";
+        draw.strokeRect( inventoryBar.x, inventoryBar.y, inventoryBar.width, inventoryBar.height );
+        draw.fillStyle = "green";
+        draw.fillRect(hpBtn.x, hpBtn.y, hpBtn.width, hpBtn.height);
+        draw.drawImage(hpPotionImg, hpBtn.x, hpBtn.y, hpBtn.width, hpBtn.height)
+        draw.fillStyle = "blue";
+        draw.fillRect(mpBtn.x, mpBtn.y, mpBtn.width, mpBtn.height);
+        draw.drawImage(mpPotionImg, mpBtn.x, mpBtn.y, mpBtn.width, mpBtn.height)
+
+        draw.fillStyle = "red";
+        draw.fillRect(weaponBtn.x, weaponBtn.y, weaponBtn.width, weaponBtn.height);
+        draw.drawImage(weaponImg, weaponBtn.x, weaponBtn.y, weaponBtn.width, weaponBtn.height);
+        draw.fillStyle = "grey";
+        draw.fillRect(armorBtn.x, armorBtn.y, armorBtn.width, armorBtn.height);
+        draw.drawImage(armorImage, armorBtn.x, armorBtn.y, armorBtn.width, armorBtn.height);
+
+        //openWeaponInventory = true;
+        if(openWeaponInventory){
+            draw.fillStyle = "white";
+            draw.fillRect(70, 70, 420, 420);
+
+            draw.fillStyle = "red";
+            draw.fillRect(exitbtn.x, exitbtn.y, exitbtn.width, exitbtn.height);
+
+            draw.fillStyle = "Black";
+            draw.font = "25px arial";
+            draw.fillText(`Equipped: ${player.weapon}`, 75, 95);
+            //draw.fillText(`${weapons[0][0]}, Damage: ${weapons[0][1]}`, 150, 160);
+            //draw.fillText(`${weapons[1][0]}, Damage: ${weapons[1][1]}`, 150, 230); // display weapon name and attack value
+
+            // ChatGpt method
+            for(let i = 0; i < weapons.length; i++){
+                let name = weapons[i][0];
+                let damage = weapons[i][1];
+                draw.fillText(`${name}, Damage: ${damage}`, 150, 160 + i * 70);
+            }
+
+            draw.fillStyle = "black";
+            draw.strokeRect( 75, 125, 60, 60 );
+            draw.strokeRect( 75, 190, 60, 60 );
+
+            draw.drawImage(weaponImages[0], 75, 125, 60, 60);
+            draw.drawImage(weaponImages[1], 75, 190, 60, 60);
+
+            draw.fillText("X", 495, 60);
+        }
+
+        if(openArmorInventory){
+            draw.fillStyle = "white";
+            draw.fillRect(70, 70, 420, 420);
+
+            draw.fillStyle = "red";
+            draw.fillRect(exitbtn.x, exitbtn.y, exitbtn.width, exitbtn.height);
+
+            draw.fillStyle = "Black";
+            draw.font = "30px arial";
+            draw.fillText(`Health Potions: ${player.healthPotion}`, 75, 95);
+            draw.fillText(`Mana Potions: ${player.manaPotions}`, 75, 130);
+            draw.fillText(`Weapon: ${player.attack}`, 75, 165); // display weapon name and attack value
+            draw.fillText("X", 495, 60);
+        }
+        
         if(touchingDoor){
             draw.fillStyle = "black";
             draw.fillRect(dungeonDoor.x- camera.x, dungeonDoor.y-camera.y, dungeonDoor.width, dungeonDoor.height);
