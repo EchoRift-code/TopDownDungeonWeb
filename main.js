@@ -512,9 +512,11 @@ let exitbtn = { x: 490, y: 35, width: 30, height: 30};
 // Track Keys
 let keys={};
 document.addEventListener("keydown", (e)=>{
+    e.preventDefault();
     keys[e.key]=true;
 });
 document.addEventListener("keyup", (e)=>{
+    e.preventDefault();
     player.state = "idle";
 
     // Having this in here will make it so the player can only use 1 potion at a time and cannot exceed max health
@@ -528,6 +530,7 @@ document.addEventListener("keyup", (e)=>{
     keys[e.key]=false;
 });
 document.addEventListener("click", (e) =>{
+    e.preventDefault();
     // Get the coordinates relative the screen/canvas
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left; // X relative to canvas
@@ -661,6 +664,7 @@ document.addEventListener("touchstart", (e) =>{
     //keys[e.key]=true;
 });
 document.addEventListener("touchend", (e) => {
+    e.preventDefault();
     // Since we don't have a 'key', we manually turn off the attack key
     keys["f"] = false;
     keys["ArrowUp"] = false;
